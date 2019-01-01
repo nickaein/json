@@ -11411,6 +11411,44 @@ class serializer
     }
 
     /*!
+    @brief count digits
+
+    Count the number of decimal (base 10) digits for an input unsigned integer.
+
+    @param[in] x  unsigned integer number to count its digits
+    @return    number of decimal digits
+    */
+    inline unsigned int count_digits(number_unsigned_t x)
+    {
+        // Fast count_digits implementation inspired by "Fastware" talk by Andrei Alexandrescu
+        // See: https://www.youtube.com/watch?v=o4-CwDo2zpg
+        unsigned int n_digits = 1;
+        for (;;)
+        {
+            if (x < 10)
+            {
+                return n_digits;
+            }
+            if (x < 100)
+            {
+                return n_digits + 1;
+            }
+            if (x < 1000)
+            {
+                return n_digits + 2;
+            }
+            if (x < 10000)
+            {
+                return n_digits + 3;
+            }
+            x = x / 10000u;
+            n_digits += 4;
+        }
+
+        return n_digits;
+    }
+
+    /*!
     @brief dump an integer
 
     Dump a given integer to output stream @a o. Works internally with
@@ -11425,6 +11463,13 @@ class serializer
                  int> = 0>
     void dump_integer(NumberType x)
     {
+        static constexpr auto digits_to_99 =
+            "0001020304050607080910111213141516171819"
+            "2021222324252627282930313233343536373839"
+            "4041424344454647484950515253545556575859"
+            "6061626364656667686970717273747576777879"
+            "8081828384858687888990919293949596979899";
+
         // special case for "0"
         if (x == 0)
         {
@@ -11432,28 +11477,55 @@ class serializer
             return;
         }
 
-        const bool is_negative = std::is_same<NumberType, number_integer_t>::value and not (x >= 0);  // see issue #755
-        std::size_t i = 0;
+        // use a pointer to fill the buffer
+        auto buffer_ptr = begin(number_buffer);
 
-        while (x != 0)
-        {
-            // spare 1 byte for '\0'
-            assert(i < number_buffer.size() - 1);
-
-            const auto digit = std::labs(static_cast<long>(x % 10));
-            number_buffer[i++] = static_cast<char>('0' + digit);
-            x /= 10;
-        }
+        const bool is_negative = std::is_same<NumberType, number_integer_t>::value and not(x >= 0); // see issue #755
+        number_unsigned_t abs_value;
 
         if (is_negative)
         {
-            // make sure there is capacity for the '-'
-            assert(i < number_buffer.size() - 2);
-            number_buffer[i++] = '-';
+            *buffer_ptr++ = '-';
+            abs_value = static_cast<number_unsigned_t>(0 - x);
+        }
+        else
+        {
+            abs_value = static_cast<number_unsigned_t>(x);
+
         }
 
-        std::reverse(number_buffer.begin(), number_buffer.begin() + i);
-        o->write_characters(number_buffer.data(), i);
+        auto n_digits = count_digits(abs_value);
+
+        // spare 1 byte for '\0'
+        assert(n_digits < number_buffer.size() - 1);
+
+        // jump to the end to generate the string from backward
+        // so we later avoid reversing the result
+        buffer_ptr += n_digits;
+
+        // Fast int2ascii implementation inspired by "Fastware" talk by Andrei Alexandrescu
+        // See: https://www.youtube.com/watch?v=o4-CwDo2zpg
+        auto buffer_end = buffer_ptr;
+        while (abs_value >= 100)
+        {
+            auto digits_index = static_cast<unsigned>((abs_value % 100) * 2);
+            abs_value /= 100;
+            *--buffer_ptr = digits_to_99[digits_index + 1];
+            *--buffer_ptr = digits_to_99[digits_index];
+        }
+
+        if (abs_value < 10)
+        {
+            *--buffer_ptr = '0' + abs_value;
+        }
+        else
+        {
+            unsigned digits_index = static_cast<unsigned>(abs_value * 2);
+            *--buffer_ptr = digits_to_99[digits_index + 1];
+            *--buffer_ptr = digits_to_99[digits_index];
+        }
+
+        o->write_characters(number_buffer.data(), static_cast<size_t>(buffer_end - begin(number_buffer)));
     }
 
     /*!
