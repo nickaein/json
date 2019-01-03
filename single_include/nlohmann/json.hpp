@@ -11516,7 +11516,7 @@ class serializer
 
         if (abs_value < 10)
         {
-            *--buffer_ptr = '0' + abs_value;
+            *--buffer_ptr = static_cast<char>('0' + abs_value);
         }
         else
         {
