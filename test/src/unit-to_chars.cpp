@@ -474,7 +474,7 @@ TEST_CASE("formatting")
 
     SECTION("integer")
     {
-        auto check_integer = [](long number, const std::string & expected)
+        auto check_integer = [](std::int64_t number, const std::string & expected)
         {
             nlohmann::json j = number;
             CHECK(j.dump() == expected);
