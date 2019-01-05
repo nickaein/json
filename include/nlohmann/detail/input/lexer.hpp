@@ -12,6 +12,8 @@
 #include <nlohmann/detail/input/input_adapters.hpp>
 #include <nlohmann/detail/input/position_t.hpp>
 
+#include <nlohmann/detail/input/my.hpp>
+
 namespace nlohmann
 {
 namespace detail
@@ -1156,10 +1158,11 @@ scan_number_done:
         // try to parse integers first and fall back to floats
         if (number_type == token_type::value_unsigned)
         {
-            const auto x = std::strtoull(token_buffer.data(), &endptr, 10);
+            // const auto x = std::strtoull(token_buffer.data(), &endptr, 10);
+            const auto x = my_atoi(token_buffer.data(), token_buffer.data() + token_buffer.size() );
 
             // we checked the number format before
-            assert(endptr == token_buffer.data() + token_buffer.size());
+            // assert(endptr == token_buffer.data() + token_buffer.size());
 
             if (errno == 0)
             {
@@ -1172,10 +1175,11 @@ scan_number_done:
         }
         else if (number_type == token_type::value_integer)
         {
-            const auto x = std::strtoll(token_buffer.data(), &endptr, 10);
+            // const auto x = std::strtoll(token_buffer.data(), &endptr, 10);
+            const auto x = -static_cast<int64_t>(my_atoi(1 + token_buffer.data(), token_buffer.data() + token_buffer.size()));
 
             // we checked the number format before
-            assert(endptr == token_buffer.data() + token_buffer.size());
+            // assert(endptr == token_buffer.data() + token_buffer.size());
 
             if (errno == 0)
             {

@@ -2579,6 +2579,54 @@ class input_adapter
 // #include <nlohmann/detail/input/position_t.hpp>
 
 
+// #include <nlohmann/detail/input/my.hpp>
+
+#include <cstdint>
+
+uint64_t my_atoi(const char* b, const char* e);
+
+uint64_t my_atoi(const char* b, const char* e)
+{
+    static constexpr uint64_t pow10[20] =
+    {
+        10000000000000000000UL,
+        1000000000000000000UL,
+        100000000000000000UL,
+        10000000000000000UL,
+        1000000000000000UL,
+        100000000000000UL,
+        10000000000000UL,
+        1000000000000UL,
+        100000000000UL,
+        10000000000UL,
+        1000000000UL,
+        100000000UL,
+        10000000UL,
+        1000000UL,
+        100000UL,
+        10000UL,
+        1000UL,
+        100UL,
+        10UL,
+        1UL,
+    };
+
+    assert(b < e);
+
+    uint64_t result = 0;
+    auto i = sizeof(pow10) / sizeof(*pow10) - static_cast<unsigned>(e - b);
+
+    for (; b != e ; ++b)
+    {
+        // assert(*b>='0' && *b<='9');
+
+        result += pow10[i++] * (static_cast<unsigned>(*b - '0'));
+    }
+
+    return result;
+}
+
+
 namespace nlohmann
 {
 namespace detail
@@ -3723,10 +3771,11 @@ scan_number_done:
         // try to parse integers first and fall back to floats
         if (number_type == token_type::value_unsigned)
         {
-            const auto x = std::strtoull(token_buffer.data(), &endptr, 10);
+            // const auto x = std::strtoull(token_buffer.data(), &endptr, 10);
+            const auto x = my_atoi(token_buffer.data(), token_buffer.data() + token_buffer.size() );
 
             // we checked the number format before
-            assert(endptr == token_buffer.data() + token_buffer.size());
+            // assert(endptr == token_buffer.data() + token_buffer.size());
 
             if (errno == 0)
             {
@@ -3739,10 +3788,11 @@ scan_number_done:
         }
         else if (number_type == token_type::value_integer)
         {
-            const auto x = std::strtoll(token_buffer.data(), &endptr, 10);
+            // const auto x = std::strtoll(token_buffer.data(), &endptr, 10);
+            const auto x = -static_cast<int64_t>(my_atoi(1 + token_buffer.data(), token_buffer.data() + token_buffer.size()));
 
             // we checked the number format before
-            assert(endptr == token_buffer.data() + token_buffer.size());
+            // assert(endptr == token_buffer.data() + token_buffer.size());
 
             if (errno == 0)
             {

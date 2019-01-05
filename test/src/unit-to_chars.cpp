@@ -471,13 +471,24 @@ TEST_CASE("formatting")
         check_double(  1.2345e+21,   "1.2344999999999999e+21" ); //  1.2345e+21                1.2344999999999999e+21    1.2345e21
         check_double(  1.2345e+22,   "1.2345e+22"             ); //  1.2345e+22                1.2345e+22                1.2345e22
     }
+}
 
-    SECTION("integer")
+TEST_CASE("integers")
+{
+    SECTION("integers")
     {
         auto check_integer = [](std::int64_t number, const std::string & expected)
         {
+            CAPTURE(number);
+            CAPTURE(expected);
+
             nlohmann::json j = number;
             CHECK(j.dump() == expected);
+
+            std::string json_str = std::string("{ \"value\": ") + expected + " }";
+
+            auto j2 = nlohmann::json::parse(json_str);
+            CHECK(j2["value"] == number);
         };
 
         // edge cases
