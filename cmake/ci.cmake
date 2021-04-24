@@ -35,6 +35,11 @@ execute_process(COMMAND ${GCC_TOOL} --version OUTPUT_VARIABLE GCC_TOOL_VERSION E
 string(REGEX MATCH "[0-9]+(\\.[0-9]+)+" GCC_TOOL_VERSION "${GCC_TOOL_VERSION}")
 message(STATUS "🔖 GCC ${GCC_TOOL_VERSION} (${GCC_TOOL})")
 
+find_program(ICPX_TOOL NAMES icpx)
+execute_process(COMMAND ${ICPX_TOOL} --version OUTPUT_VARIABLE ICPX_TOOL_VERSION ERROR_VARIABLE ICPX_TOOL_VERSION)
+string(REGEX MATCH "[0-9]+(\\.[0-9]+)+" ICPX_TOOL_VERSION "${ICPX_TOOL_VERSION}")
+message(STATUS "🔖 Intel C++ Compiler ${ICPX_TOOL_VERSION} (${ICPX_TOOL})")
+
 find_program(GCOV_TOOL NAMES gcov-HEAD gcov-11 gcov-10 gcov)
 execute_process(COMMAND ${GCOV_TOOL} --version OUTPUT_VARIABLE GCOV_TOOL_VERSION ERROR_VARIABLE GCOV_TOOL_VERSION)
 string(REGEX MATCH "[0-9]+(\\.[0-9]+)+" GCOV_TOOL_VERSION "${GCOV_TOOL_VERSION}")
@@ -372,6 +377,21 @@ set(GCC_CXXFLAGS "-std=c++11                          \
     -Wzero-length-bounds                              \
 ")
 
+set(ICPX_CXXFLAGS "-std=c++11                            \
+    -Werror                                              \
+    -Weverything                                         \
+    -Wno-c++98-compat                                    \
+    -Wno-c++98-compat-pedantic                           \
+    -Wno-deprecated-declarations                         \
+    -Wno-documentation-unknown-command                   \
+    -Wno-exit-time-destructors                           \
+    -Wno-extra-semi-stmt                                 \
+    -Wno-padded                                          \
+    -Wno-range-loop-analysis                             \
+    -Wno-switch-enum -Wno-covered-switch-default         \
+    -Wno-weak-vtables                                    \
+")
+
 add_custom_target(ci_test_gcc
     COMMAND CXX=${GCC_TOOL} CXXFLAGS=${GCC_CXXFLAGS} ${CMAKE_COMMAND}
         -DCMAKE_BUILD_TYPE=Debug -GNinja
@@ -390,6 +410,16 @@ add_custom_target(ci_test_clang
     COMMAND ${CMAKE_COMMAND} --build ${PROJECT_BINARY_DIR}/build_clang
     COMMAND cd ${PROJECT_BINARY_DIR}/build_clang && ${CMAKE_CTEST_COMMAND} --parallel ${N} --output-on-failure
     COMMENT "Compile and test with Clang using maximal warning flags"
+)
+
+add_custom_target(ci_test_intel_icpx
+    COMMAND CXX=${ICPX_TOOL} CXXFLAGS=${ICPX_CXXFLAGS} ${CMAKE_COMMAND}
+        -DCMAKE_BUILD_TYPE=Debug -GNinja
+        -DJSON_BuildTests=ON -DJSON_MultipleHeaders=ON
+        -S${PROJECT_SOURCE_DIR} -B${PROJECT_BINARY_DIR}/build_icpx
+    COMMAND ${CMAKE_COMMAND} --build ${PROJECT_BINARY_DIR}/build_icpx
+    COMMAND cd ${PROJECT_BINARY_DIR}/build_icpx && ${CMAKE_CTEST_COMMAND} --parallel ${N} --output-on-failure
+    COMMENT "Compile and test with Intel C++ Compiler using maximal warning flags"
 )
 
 ###############################################################################
