@@ -15,20 +15,20 @@ IF "%VS_VER%"=="2019_build_tools" (
 for /f "tokens=* usebackq" %%f in (`dir /b "C:\Program Files (x86)\Intel\oneAPI\compiler\" ^| findstr /V latest ^| sort`) do @set "LATEST_VERSION=%%f"
 @call "C:\Program Files (x86)\Intel\oneAPI\compiler\%LATEST_VERSION%\env\vars.bat"
 
-REM git clone --depth 1 https://github.com/oneapi-src/oneAPI-samples.git
-
-if "%LANGUAGE%" == "c++" goto cpp
-if "%LANGUAGE%" == "fortran" goto fortran
+if "%LANGUAGE%" == "build_win_icx" goto build_win_icx
+if "%LANGUAGE%" == "build_win_icl" goto build_win_icl
 if "%LANGUAGE%" == "dpc++" goto dpcpp
 goto exit
 
-:cpp
-@REM cd oneAPI-samples\DirectProgramming\C++\CompilerInfrastructure\Intrinsics
+:build_win_icx
+cmake -S . -B build_icx -G "NMake Makefiles" -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DJSON_BuildTests=On -DCMAKE_BUILD_TYPE=Release -DJSON_FastTests=ON
+cmake --build build_icx --parallel 10
+@REM cd build ; ctest -j 10 --output-on-failure
 
-dir
-cmake -S . -B build -G "Visual Studio 16 2019" -DJSON_BuildTests=On
-cmake --build build --parallel 10
-cd build ; ctest -j 10 --output-on-failure
+:build_win_icl
+cmake -S . -B build_icl -G "NMake Makefiles" -DCMAKE_C_COMPILER=icl -DCMAKE_CXX_COMPILER=icl -DJSON_BuildTests=On -DCMAKE_BUILD_TYPE=Release -DJSON_FastTests=ON
+cmake --build build_icl --parallel 10
+@REM cd build ; ctest -j 10 --output-on-failure
 
 @REM icl -O2 src\intrin_dot_sample.cpp
 @REM icl -O2 src\intrin_double_sample.cpp
