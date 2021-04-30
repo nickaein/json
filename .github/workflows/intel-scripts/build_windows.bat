@@ -15,6 +15,7 @@ IF "%VS_VER%"=="2019_build_tools" (
 for /f "tokens=* usebackq" %%f in (`dir /b "C:\Program Files (x86)\Intel\oneAPI\compiler\" ^| findstr /V latest ^| sort`) do @set "LATEST_VERSION=%%f"
 @call "C:\Program Files (x86)\Intel\oneAPI\compiler\%LATEST_VERSION%\env\vars.bat"
 
+
 if "%BUILD_TYPE%" == "build_win_icx" goto build_win_icx
 if "%BUILD_TYPE%" == "build_win_icl" goto build_win_icl
 @REM if "%LANGUAGE%" == "dpc++" goto dpcpp

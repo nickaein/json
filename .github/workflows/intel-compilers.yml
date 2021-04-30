@@ -10,12 +10,12 @@ on:
   workflow_dispatch:
 
 env:
-  WINDOWS_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17768/w_BaseKit_p_2021.2.0.2871_offline.exe
   WINDOWS_HPCKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17762/w_HPCKit_p_2021.2.0.2901_offline.exe
-  LINUX_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17769/l_BaseKit_p_2021.2.0.2883_offline.sh
   LINUX_HPCKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17764/l_HPCKit_p_2021.2.0.2997_offline.sh
   WINDOWS_CPP_COMPONENTS: intel.oneapi.win.cpp-compiler
   LINUX_CPP_COMPONENTS_WEB: intel.oneapi.lin.dpcpp-cpp-compiler-pro
+  # WINDOWS_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17768/w_BaseKit_p_2021.2.0.2871_offline.exe
+  # LINUX_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17769/l_BaseKit_p_2021.2.0.2883_offline.sh
   # MACOS_HPCKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17643/m_HPCKit_p_2021.2.0.2903_offline.dmg
   # WINDOWS_DPCPP_COMPONENTS: intel.oneapi.win.dpcpp-compiler
   # LINUX_CPP_COMPONENTS: intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
@@ -24,7 +24,7 @@ env:
   # MACOS_CPP_COMPONENTS: intel.oneapi.mac.cpp-compiler
 
 jobs:
-  build_linux_cpp_basekit:
+  build_linux:
     runs-on: ubuntu-20.04
     defaults:
       run:
@@ -37,14 +37,14 @@ jobs:
       with:
         path: |
           /opt/intel/oneapi/compiler
-        key: install-${{ env.LINUX_BASEKIT_URL }}-${{ env.LINUX_CPP_COMPONENTS_WEB }}-compiler-${{ hashFiles('**/.github/workflows/intel-scripts/cache_exclude_linux.sh') }}
+        key: install-${{ env.LINUX_HPCKIT_URL }}-${{ env.LINUX_CPP_COMPONENTS_WEB }}-compiler-${{ hashFiles('**/.github/workflows/intel-scripts/cache_exclude_linux.sh') }}
     - name: install
       if: steps.cache-install.outputs.cache-hit != 'true'
-      run: .github/workflows/intel-scripts/install_linux.sh $LINUX_BASEKIT_URL $LINUX_CPP_COMPONENTS_WEB
-    - name: build_linux_icpc
-      run: .github/workflows/intel-scripts/build_linux.sh build_linux_icpc
+      run: .github/workflows/intel-scripts/install_linux.sh $LINUX_HPCKIT_URL $LINUX_CPP_COMPONENTS_WEB
     - name: build_linux_icpx
       run: .github/workflows/intel-scripts/build_linux.sh build_linux_icpx
+    - name: build_linux_icpc
+      run: .github/workflows/intel-scripts/build_linux.sh build_linux_icpc
     - name: exclude unused files from cache
       if: steps.cache-install.outputs.cache-hit != 'true'
       run: .github/workflows/intel-scripts/cache_exclude_linux.sh
@@ -60,43 +60,7 @@ jobs:
           installer*
         retention-days: 7
 
-  # build_linux_cpp_hpckit:
-  #   runs-on: ubuntu-20.04
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: cache install
-  #     id: cache-install
-  #     uses: actions/cache@v2
-  #     with:
-  #       path: |
-  #         /opt/intel/oneapi/compiler
-  #       key: install-${{ env.LINUX_HPCKIT_URL }}-${{ env.LINUX_CPP_COMPONENTS_WEB }}-compiler-${{ hashFiles('**/.github/workflows/intel-scripts/cache_exclude_linux.sh') }}
-  #   - name: install
-  #     if: steps.cache-install.outputs.cache-hit != 'true'
-  #     run: .github/workflows/intel-scripts/install_linux.sh $LINUX_HPCKIT_URL $LINUX_CPP_COMPONENTS_WEB
-  #   - name: build_linux_icpx
-  #     run: .github/workflows/intel-scripts/build_linux.sh build_linux_icpx
-  #   - name: build_linux_icpc
-  #     run: .github/workflows/intel-scripts/build_linux.sh build_linux_icpc
-  #   - name: exclude unused files from cache
-  #     if: steps.cache-install.outputs.cache-hit != 'true'
-  #     run: .github/workflows/intel-scripts/cache_exclude_linux.sh
-
-  #   # Delete the following if you don't want to save install logs
-  #   - name: Saving install logs
-  #     if: steps.cache-install.outputs.cache-hit != 'true'
-  #     uses: actions/upload-artifact@v2
-  #     with:
-  #       name: InstallLogs_${{ github.job }}
-  #       path: |
-  #         bootstrapper*
-  #         installer*
-  #       retention-days: 7
-
-  build_windows_cpp_basekit:
+  build_windows:
     runs-on: windows-latest
     defaults:
       run:
@@ -108,43 +72,18 @@ jobs:
       uses: actions/cache@v2
       with:
         path: C:\Program Files (x86)\Intel\oneAPI\compiler
-        key: install-${{ env.WINDOWS_BASEKIT_URL }}-${{ env.WINDOWS_CPP_COMPONENTS }}-compiler-${{ hashFiles('**/.github/workflows/intel-scripts/cache_exclude_windows.sh') }}
+        key: install-${{ env.WINDOWS_HPCKIT_URL }}-${{ env.WINDOWS_CPP_COMPONENTS }}-compiler-${{ hashFiles('**/.github/workflows/intel-scripts/cache_exclude_windows.sh') }}
     - name: install
       if: steps.cache-install.outputs.cache-hit != 'true'
-      run: .github/workflows/intel-scripts/install_windows.bat $WINDOWS_BASEKIT_URL $WINDOWS_CPP_COMPONENTS
-    - name: build_win_icl
-      run: .github/workflows/intel-scripts/build_windows.bat build_win_icl
+      run: .github/workflows/intel-scripts/install_windows.bat $WINDOWS_HPCKIT_URL $WINDOWS_CPP_COMPONENTS
     - name: build_win_icx
       run: .github/workflows/intel-scripts/build_windows.bat build_win_icx
+    - name: build_win_icl
+      run: .github/workflows/intel-scripts/build_windows.bat build_win_icl
     - name: exclude unused files from cache
       if: steps.cache-install.outputs.cache-hit != 'true'
       shell: bash
       run: .github/workflows/intel-scripts/cache_exclude_windows.sh
-
-  # build_windows_cpp_hpckit:
-  #   runs-on: windows-latest
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: cache install
-  #     id: cache-install
-  #     uses: actions/cache@v2
-  #     with:
-  #       path: C:\Program Files (x86)\Intel\oneAPI\compiler
-  #       key: install-${{ env.WINDOWS_HPCKIT_URL }}-${{ env.WINDOWS_CPP_COMPONENTS }}-compiler-${{ hashFiles('**/.github/workflows/intel-scripts/cache_exclude_windows.sh') }}
-  #   - name: install
-  #     if: steps.cache-install.outputs.cache-hit != 'true'
-  #     run: .github/workflows/intel-scripts/install_windows.bat $WINDOWS_HPCKIT_URL $WINDOWS_CPP_COMPONENTS
-  #   - name: build_win_icl
-  #     run: .github/workflows/intel-scripts/build_windows.bat build_win_icl
-  #   - name: build_win_icx
-  #     run: .github/workflows/intel-scripts/build_windows.bat build_win_icx
-  #   - name: exclude unused files from cache
-  #     if: steps.cache-install.outputs.cache-hit != 'true'
-  #     shell: bash
-  #     run: .github/workflows/intel-scripts/cache_exclude_windows.sh
 
     # # Delete the following if you don't want to save install logs
     # - name: Saving install logs
