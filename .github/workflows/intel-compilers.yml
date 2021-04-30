@@ -26,9 +26,6 @@ env:
 jobs:
   build_linux:
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        compiler: [icpx, icpc]
     defaults:
       run:
         shell: bash
@@ -44,8 +41,10 @@ jobs:
     - name: install
       if: steps.cache-install.outputs.cache-hit != 'true'
       run: .github/workflows/intel-scripts/install_linux.sh $LINUX_HPCKIT_URL $LINUX_CPP_COMPONENTS_WEB
-    - name: build
-      run: .github/workflows/intel-scripts/build_linux.sh ${{ matrix.compiler }}
+    - name: build_icpx
+      run: .github/workflows/intel-scripts/build_linux.sh icpx
+    - name: build_icpc
+      run: .github/workflows/intel-scripts/build_linux.sh icpc
     - name: exclude unused files from cache
       if: steps.cache-install.outputs.cache-hit != 'true'
       run: .github/workflows/intel-scripts/cache_exclude_linux.sh
@@ -80,8 +79,10 @@ jobs:
     - name: install
       if: steps.cache-install.outputs.cache-hit != 'true'
       run: .github/workflows/intel-scripts/install_windows.bat $WINDOWS_HPCKIT_URL $WINDOWS_CPP_COMPONENTS
-    - name: build
-      run: .github/workflows/intel-scripts/build_windows.bat ${{ matrix.compiler }}
+    - name: build_icx
+      run: .github/workflows/intel-scripts/build_windows.bat icx
+    - name: build_icl
+      run: .github/workflows/intel-scripts/build_windows.bat icl
     - name: exclude unused files from cache
       if: steps.cache-install.outputs.cache-hit != 'true'
       shell: bash
