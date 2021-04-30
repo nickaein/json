@@ -48,9 +48,7 @@ set(ICPX_CXXFLAGS "-std=c++11                            \
     -Wno-weak-vtables                                    \
 ")
 
-set(ICPC_CXXFLAGS "-std=c++11                            \
-    -Werror                                              \
-")
+set(ICPC_CXXFLAGS "-std=c++11")
 
 add_custom_target(ci_test_intel_icpx
     COMMAND CXX=${ICPX_TOOL} CXXFLAGS=${ICPX_CXXFLAGS} ${CMAKE_COMMAND}
