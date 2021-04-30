@@ -62,9 +62,6 @@ jobs:
 
   build_windows:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        compiler: [icx, icl]
     defaults:
       run:
         shell: bash
