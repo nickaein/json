@@ -15,9 +15,8 @@ source /opt/intel/oneapi/compiler/"$LATEST_VERSION"/env/vars.sh
 
 case $LANGUAGE in
 c++)
-  cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DJSON_BuildTests=On
-  cmake --build build --parallel 10
-  cd build ; ctest -j 10 --output-on-failure
+  cmake -S . -B build -DJSON_CI=ci-intel
+  cmake --build build --target ci_test_intel_icpx
   # cd oneAPI-samples/DirectProgramming/C++/CompilerInfrastructure/Intrinsics
   # make && make run && make clean && make CC='icx -msse3' && make run
   ;;

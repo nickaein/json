@@ -25,7 +25,8 @@ goto exit
 :cpp
 @REM cd oneAPI-samples\DirectProgramming\C++\CompilerInfrastructure\Intrinsics
 
-cmake -S . -B build -G "Visual Studio 16 2019" -A ${{ matrix.architecture }} -DJSON_BuildTests=On
+dir
+cmake -S . -B build -G "Visual Studio 16 2019" -DJSON_BuildTests=On
 cmake --build build --parallel 10
 cd build ; ctest -j 10 --output-on-failure
 
