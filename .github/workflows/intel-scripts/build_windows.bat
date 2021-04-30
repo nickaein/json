@@ -16,12 +16,12 @@ for /f "tokens=* usebackq" %%f in (`dir /b "C:\Program Files (x86)\Intel\oneAPI\
 @call "C:\Program Files (x86)\Intel\oneAPI\compiler\%LATEST_VERSION%\env\vars.bat"
 
 
-if "%BUILD_TYPE%" == "build_win_icx" goto build_win_icx
-if "%BUILD_TYPE%" == "build_win_icl" goto build_win_icl
+if "%BUILD_TYPE%" == "icx" goto build_icx
+if "%BUILD_TYPE%" == "icl" goto build_icl
 @REM if "%LANGUAGE%" == "dpc++" goto dpcpp
 goto exit
 
-:build_win_icx
+:build_icx
 @REM  -DJSON_FastTests=ON
 cmake -S . -B build_icx -G "NMake Makefiles" -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icx -DJSON_BuildTests=On -DCMAKE_BUILD_TYPE=Release
 cmake --build build_icx --parallel 10
@@ -29,7 +29,7 @@ cmake --build build_icx --parallel 10
 set RESULT=%ERRORLEVEL%
 goto exit
 
-:build_win_icl
+:build_icl
 cmake -S . -B build_icl -G "NMake Makefiles" -DCMAKE_C_COMPILER=icl -DCMAKE_CXX_COMPILER=icl -DJSON_BuildTests=On -DCMAKE_BUILD_TYPE=Release
 cmake --build build_icl --parallel 10
 @REM cd build ; ctest -j 10 --output-on-failure
