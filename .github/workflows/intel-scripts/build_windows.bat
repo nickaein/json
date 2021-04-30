@@ -25,11 +25,13 @@ goto exit
 cmake -S . -B build_icx -G "NMake Makefiles" -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icx -DJSON_BuildTests=On -DCMAKE_BUILD_TYPE=Release
 cmake --build build_icx --parallel 10
 @REM cd build ; ctest -j 10 --output-on-failure
+goto exit
 
 :build_win_icl
 cmake -S . -B build_icl -G "NMake Makefiles" -DCMAKE_C_COMPILER=icl -DCMAKE_CXX_COMPILER=icl -DJSON_BuildTests=On -DCMAKE_BUILD_TYPE=Release
 cmake --build build_icl --parallel 10
 @REM cd build ; ctest -j 10 --output-on-failure
+goto exit
 
 @REM icl -O2 src\intrin_dot_sample.cpp
 @REM icl -O2 src\intrin_double_sample.cpp
