@@ -25,12 +25,17 @@ env:
 
 jobs:
   build_linux:
-    runs-on: nvidia/cuda:11.2.0-devel-ubuntu20.04
+    runs-on: ubuntu-latest
+    container: nvidia/cuda:11.2.0-devel-ubuntu20.04
     defaults:
       run:
         shell: bash
     steps:
     - uses: actions/checkout@v2
+    - name: install_ninja_cmake
+      run: |
+        sudo apt update
+        sudo apt install ninja-build cmake
     # - name: cache install
     #   id: cache-install
     #   uses: actions/cache@v2
@@ -41,7 +46,7 @@ jobs:
     # - name: install
       # if: steps.cache-install.outputs.cache-hit != 'true'
       # run: .github/workflows/intel-scripts/install_linux.sh $LINUX_HPCKIT_URL $LINUX_CPP_COMPONENTS_WEB
-    - name: build_icpx
+    - name: build_nvcc
       run: .github/workflows/cuda-scripts/build_linux.sh nvcc
     # - name: build_icpc
     #   run: .github/workflows/intel-scripts/build_linux.sh icpc
