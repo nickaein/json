@@ -10,6 +10,10 @@ set(N 10)
 
 message(STATUS "🔖 CMake ${CMAKE_VERSION} (${CMAKE_COMMAND})")
 
+enable_language(CUDA)
+
+find_package(CUDA REQUIRED)
+
 find_program(NVCC_TOOL NAMES nvcc)
 execute_process(COMMAND ${NVCC_TOOL} --version OUTPUT_VARIABLE NVCC_TOOL_VERSION ERROR_VARIABLE NVCC_TOOL_VERSION)
 string(REGEX MATCH "[0-9]+(\\.[0-9]+)+" NVCC_TOOL_VERSION "${NVCC_TOOL_VERSION}")
