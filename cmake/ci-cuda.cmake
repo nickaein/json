@@ -26,7 +26,7 @@ message(STATUS "🔖 NVIDIA nvcc Compiler ${NVCC_TOOL_VERSION} (${NVCC_TOOL})")
 # the individual source files
 file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/include/nlohmann/*.hpp)
 
-set_source_files_properties(${SRC_FILES} PROPERTIES LANGUAGE CUDA)
+# set_source_files_properties(${SRC_FILES} PROPERTIES LANGUAGE CUDA)
 
 ###############################################################################
 # Thorough check with recent compilers
