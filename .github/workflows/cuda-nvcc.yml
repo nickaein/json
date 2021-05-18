@@ -33,6 +33,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: install_ninja_cmake
+      env:
+        DEBIAN_FRONTEND: "noninteractive"
       run: |
         apt-get update
         apt-get -y install ninja-build cmake
