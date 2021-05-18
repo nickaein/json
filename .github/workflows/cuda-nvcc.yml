@@ -35,7 +35,7 @@ jobs:
     - name: install_ninja_cmake
       run: |
         apt-get update
-        apt-get install ninja-build cmake
+        apt-get -y install ninja-build cmake
     # - name: cache install
     #   id: cache-install
     #   uses: actions/cache@v2
