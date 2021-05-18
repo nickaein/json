@@ -43,7 +43,7 @@ jobs:
       run: |
         wget $CMAKE_INSTALL -O cmake-install.sh
         chmod +x cmake-install.sh
-        ./cmake-install.sh ---skip-license --prefix=/usr
+        ./cmake-install.sh --skip-license --prefix=/usr
 
     # - name: cache install
     #   id: cache-install
