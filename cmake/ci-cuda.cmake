@@ -11,7 +11,6 @@ set(N 10)
 message(STATUS "🔖 CMake ${CMAKE_VERSION} (${CMAKE_COMMAND})")
 
 enable_language(CUDA)
-
 find_package(CUDA REQUIRED)
 
 find_program(NVCC_TOOL NAMES nvcc)
@@ -30,6 +29,7 @@ set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std=c++11" )
 file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/include/nlohmann/*.hpp)
 
 set_source_files_properties(${SRC_FILES} PROPERTIES LANGUAGE CUDA)
+set(CUDA_HOST_COMPILATION_CPP ON)
 
 ###############################################################################
 # Thorough check with recent compilers
@@ -38,9 +38,10 @@ set_source_files_properties(${SRC_FILES} PROPERTIES LANGUAGE CUDA)
 set(NVCC_CXXFLAGS "")
 
 add_custom_target(ci_test_nvcc
-    # COMMAND CXX=${NVCC_TOOL} CXXFLAGS=${NVCC_CXXFLAGS} ${CMAKE_COMMAND}
-    COMMAND ${CMAKE_COMMAND}
+    COMMAND CXX=${NVCC_TOOL} CXXFLAGS=${NVCC_CXXFLAGS} ${CMAKE_COMMAND}
+    # COMMAND ${CMAKE_COMMAND}
         -DCMAKE_BUILD_TYPE=Release -GNinja
+        -DCMAKE_ENABLE_EXPORTS=OFF
         -DJSON_BuildTests=ON -DJSON_MultipleHeaders=ON
         -S${PROJECT_SOURCE_DIR} -B${PROJECT_BINARY_DIR}/build_nvcc
     COMMAND ${CMAKE_COMMAND} --build ${PROJECT_BINARY_DIR}/build_nvcc
