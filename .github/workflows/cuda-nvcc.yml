@@ -14,6 +14,7 @@ env:
   LINUX_HPCKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17764/l_HPCKit_p_2021.2.0.2997_offline.sh
   WINDOWS_CPP_COMPONENTS: intel.oneapi.win.cpp-compiler
   LINUX_CPP_COMPONENTS_WEB: intel.oneapi.lin.dpcpp-cpp-compiler-pro
+  CMAKE_INSTALL: https://github.com/Kitware/CMake/releases/download/v3.20.2/cmake-3.20.2-linux-x86_64.sh
   # WINDOWS_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17768/w_BaseKit_p_2021.2.0.2871_offline.exe
   # LINUX_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17769/l_BaseKit_p_2021.2.0.2883_offline.sh
   # MACOS_HPCKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/17643/m_HPCKit_p_2021.2.0.2903_offline.dmg
@@ -32,12 +33,18 @@ jobs:
         shell: bash
     steps:
     - uses: actions/checkout@v2
-    - name: install_ninja_cmake
+    - name: install_ninja_wget
       env:
         DEBIAN_FRONTEND: "noninteractive"
       run: |
         apt-get update
-        apt-get -y install ninja-build cmake
+        apt-get -y install ninja-build wget
+    - name: install_cmake
+      run: |
+        wget $CMAKE_INSTALL -O cmake-install.sh
+        chmod +x cmake-install.sh
+        ./cmake-install.sh
+
     # - name: cache install
     #   id: cache-install
     #   uses: actions/cache@v2
