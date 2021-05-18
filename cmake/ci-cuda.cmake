@@ -15,17 +15,17 @@ execute_process(COMMAND ${NVCC_TOOL} --version OUTPUT_VARIABLE NVCC_TOOL_VERSION
 string(REGEX MATCH "[0-9]+(\\.[0-9]+)+" NVCC_TOOL_VERSION "${NVCC_TOOL_VERSION}")
 message(STATUS "🔖 NVIDIA nvcc Compiler ${NVCC_TOOL_VERSION} (${NVCC_TOOL})")
 
-# find_program(NINJA_TOOL NAMES ninja)
-# execute_process(COMMAND ${NINJA_TOOL} --version OUTPUT_VARIABLE NINJA_TOOL_VERSION ERROR_VARIABLE NINJA_TOOL_VERSION)
-# string(REGEX MATCH "[0-9]+(\\.[0-9]+)+" NINJA_TOOL_VERSION "${NINJA_TOOL_VERSION}")
-# message(STATUS "🔖 Ninja ${NINJA_TOOL_VERSION} (${NINJA_TOOL})")
+find_program(NINJA_TOOL NAMES ninja)
+execute_process(COMMAND ${NINJA_TOOL} --version OUTPUT_VARIABLE NINJA_TOOL_VERSION ERROR_VARIABLE NINJA_TOOL_VERSION)
+string(REGEX MATCH "[0-9]+(\\.[0-9]+)+" NINJA_TOOL_VERSION "${NINJA_TOOL_VERSION}")
+message(STATUS "🔖 Ninja ${NINJA_TOOL_VERSION} (${NINJA_TOOL})")
 
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std=c++11" )
 
 # the individual source files
 file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/include/nlohmann/*.hpp)
 
-# set_source_files_properties(${SRC_FILES} PROPERTIES LANGUAGE CUDA)
+set_source_files_properties(${SRC_FILES} PROPERTIES LANGUAGE CUDA)
 
 ###############################################################################
 # Thorough check with recent compilers
@@ -34,8 +34,9 @@ file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/include/nlohmann/*.hpp)
 set(NVCC_CXXFLAGS "")
 
 add_custom_target(ci_test_nvcc
-    COMMAND CXX=${NVCC_TOOL} CXXFLAGS=${NVCC_CXXFLAGS} ${CMAKE_COMMAND}
-        -DCMAKE_BUILD_TYPE=Release #-GNinja
+    # COMMAND CXX=${NVCC_TOOL} CXXFLAGS=${NVCC_CXXFLAGS} ${CMAKE_COMMAND}
+    COMMAND ${CMAKE_COMMAND}
+        -DCMAKE_BUILD_TYPE=Release -GNinja
         -DJSON_BuildTests=ON -DJSON_MultipleHeaders=ON
         -S${PROJECT_SOURCE_DIR} -B${PROJECT_BINARY_DIR}/build_nvcc
     COMMAND ${CMAKE_COMMAND} --build ${PROJECT_BINARY_DIR}/build_nvcc
