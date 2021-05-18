@@ -10,7 +10,7 @@ set(N 10)
 
 message(STATUS "🔖 CMake ${CMAKE_VERSION} (${CMAKE_COMMAND})")
 
-find_program(ICPC_nvcc NAMES nvcc)
+find_program(NVCC_TOOL NAMES nvcc)
 execute_process(COMMAND ${NVCC_TOOL} --version OUTPUT_VARIABLE NVCC_TOOL_VERSION ERROR_VARIABLE NVCC_TOOL_VERSION)
 string(REGEX MATCH "[0-9]+(\\.[0-9]+)+" NVCC_TOOL_VERSION "${NVCC_TOOL_VERSION}")
 message(STATUS "🔖 NVIDIA nvcc Compiler ${NVCC_TOOL_VERSION} (${NVCC_TOOL})")
@@ -29,8 +29,6 @@ file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/include/nlohmann/*.hpp)
 ###############################################################################
 
 set(NVCC_CXXFLAGS "-x cu")
-
-set(ICPC_CXXFLAGS "-std=c++11")
 
 add_custom_target(ci_test_nvcc
     COMMAND CXX=${NVCC_TOOL} CXXFLAGS=${NVCC_CXXFLAGS} ${CMAKE_COMMAND}
