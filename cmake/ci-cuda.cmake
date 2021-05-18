@@ -10,6 +10,8 @@ set(N 10)
 
 message(STATUS "🔖 CMake ${CMAKE_VERSION} (${CMAKE_COMMAND})")
 
+list(APPEND CUDA_NVCC_FLAGS "-std=c++11")
+
 find_program(NVCC_TOOL NAMES nvcc)
 execute_process(COMMAND ${NVCC_TOOL} --version OUTPUT_VARIABLE NVCC_TOOL_VERSION ERROR_VARIABLE NVCC_TOOL_VERSION)
 string(REGEX MATCH "[0-9]+(\\.[0-9]+)+" NVCC_TOOL_VERSION "${NVCC_TOOL_VERSION}")
@@ -24,11 +26,13 @@ message(STATUS "🔖 NVIDIA nvcc Compiler ${NVCC_TOOL_VERSION} (${NVCC_TOOL})")
 # the individual source files
 file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/include/nlohmann/*.hpp)
 
+set_source_files_properties(${SRC_FILES} PROPERTIES LANGUAGE CUDA)
+
 ###############################################################################
 # Thorough check with recent compilers
 ###############################################################################
 
-set(NVCC_CXXFLAGS "-x cu")
+set(NVCC_CXXFLAGS "")
 
 add_custom_target(ci_test_nvcc
     COMMAND CXX=${NVCC_TOOL} CXXFLAGS=${NVCC_CXXFLAGS} ${CMAKE_COMMAND}
