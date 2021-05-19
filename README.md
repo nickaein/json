@@ -142,7 +142,7 @@ target_link_libraries(foo PRIVATE nlohmann_json::nlohmann_json)
 
 Since CMake v3.11,
 [FetchContent](https://cmake.org/cmake/help/v3.11/module/FetchContent.html) can
-be used to automatically download the repository as a dependency at configure type.
+be used to automatically download the repository as a dependency at configure time.
 
 Example:
 ```cmake
@@ -206,7 +206,7 @@ If you are using the [Meson Build System](https://mesonbuild.com), add this sour
 
 The provided meson.build can also be used as an alternative to cmake for installing `nlohmann_json` system-wide in which case a pkg-config file is installed. To use it, simply have your build system require the `nlohmann_json` pkg-config dependency. In Meson, it is preferred to use the [`dependency()`](https://mesonbuild.com/Reference-manual.html#dependency) object with a subproject fallback, rather than using the subproject directly.
 
-If you are using [Conan](https://www.conan.io/) to manage your dependencies, merely add `nlohmann_json/x.y.z` to your `conanfile`'s requires, where `x.y.z` is the release version you want to use. Please file issues [here](https://github.com/conan-io/conan-center-index/issues) if you experience problems with the packages.
+If you are using [Conan](https://www.conan.io/) to manage your dependencies, merely add [`nlohmann_json/x.y.z`](https://conan.io/center/nlohmann_json) to your `conanfile`'s requires, where `x.y.z` is the release version you want to use. Please file issues [here](https://github.com/conan-io/conan-center-index/issues) if you experience problems with the packages.
 
 If you are using [Spack](https://www.spack.io/) to manage your dependencies, you can use the [`nlohmann-json` package](https://spack.readthedocs.io/en/latest/package_list.html#nlohmann-json). Please see the [spack project](https://github.com/spack/spack) for any issues regarding the packaging.
 
@@ -1227,7 +1227,7 @@ Please note:
 
 - Unsupported versions of GCC and Clang are rejected by `#error` directives. This can be switched off by defining `JSON_SKIP_UNSUPPORTED_COMPILER_CHECK`. Note that you can expect no support in this case.
 
-The following compilers are currently used in continuous integration at [Travis](https://travis-ci.org/nlohmann/json), [AppVeyor](https://ci.appveyor.com/project/nlohmann/json), and [GitHub Actions](https://github.com/nlohmann/json/actions):
+The following compilers are currently used in continuous integration at [Travis](https://travis-ci.org/nlohmann/json), [AppVeyor](https://ci.appveyor.com/project/nlohmann/json), [Drone CI](https://cloud.drone.io/nlohmann/json), and [GitHub Actions](https://github.com/nlohmann/json/actions):
 
 | Compiler                                                          | Operating System   | CI Provider    |
 |-------------------------------------------------------------------|--------------------|----------------|
@@ -1256,6 +1256,7 @@ The following compilers are currently used in continuous integration at [Travis]
 | GCC 9.3.0 (Ubuntu 9.3.0-17ubuntu1~20.04)                          | Ubuntu 20.04.2 LTS | GitHub Actions |
 | GCC 10.2.0 (Ubuntu 10.2.0-5ubuntu1~20.04)                         | Ubuntu 20.04.2 LTS | GitHub Actions |
 | GCC 11.0.1 20210321 (experimental)                                | Ubuntu 20.04.2 LTS | GitHub Actions |
+| GCC 11.1.0                                                        | Ubuntu (aarch64)   | Drone CI       |
 | Clang 3.5.2 (3.5.2-3ubuntu1)                                      | Ubuntu 20.04.2 LTS | GitHub Actions |
 | Clang 3.6.2 (3.6.2-3ubuntu2)                                      | Ubuntu 20.04.2 LTS | GitHub Actions |
 | Clang 3.7.1 (3.7.1-2ubuntu2)                                      | Ubuntu 20.04.2 LTS | GitHub Actions |
